@@ -23,7 +23,7 @@ export function Header() {
                     </Toolbar>
                 </Grid>
                 <Grid item>
-                    <Button component={props => <Link to="/" {...props}/>} color="inherit">Home</Button>
+                    <Button component={props => <Link to="/" {...props}/>} color="inherit">Signup</Button>
                     <Button component={props => <Link to="/login" {...props}/>} color="inherit">Login</Button>
                 </Grid>
             </Grid>
