@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Container from '@material-ui/core/Container';
+import AudioRecorder from 'react-audio-recorder';
 
 export function Signup() {
     return (
@@ -19,6 +20,7 @@ export function Signup() {
                         margin="normal"
                         variant="outlined" />
                     <Typography variant="body2" component="p">Your phrase:  <b>"Houston we have had a problem"</b></Typography>
+                    <AudioRecorder/>
                 </CardContent>
                 <CardActions>
                     <Button variant="contained" color="primary">Sign in</Button>
