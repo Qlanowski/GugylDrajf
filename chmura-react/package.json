@@ -22,7 +22,6 @@
     "webpack-dev-server": "^3.4.1"
   },
   "dependencies": {
-    "@cleandersonlobo/react-mic": "^1.1.1",
     "@material-ui/core": "^4.0.2",
     "@material-ui/icons": "^3.0.1",
     "react": "^16.8.6",
