@@ -32,7 +32,7 @@ export function Signup() {
         email = event.target.value;
     }
 
-    let signIn = () => {
+    let signUp = () => {
         let base64files = [];
 
         var promise1 = new Promise(function (resolve, reject) {
@@ -42,33 +42,33 @@ export function Signup() {
                 reader.onloadend = function () {
                     let base64data = reader.result;
                     base64files.push(base64data);
-                    if(base64files.length === recordBlobs.length)
+                    if (base64files.length === recordBlobs.length)
                         resolve(base64files);
                 }
             }
         });
-        
+
         promise1.then((base64files) => {
             let json = JSON.stringify({
                 id: userId,
                 email: email,
                 audioSamples: base64files,
             });
-        });
 
-        // TODO: SEND TO SERVER AND WAIT FOR RESPONSE
-        // fetch('someEndpoint', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         id: this.refs.UserId,
-        //         email: this.refs.Email,
-        //         secondParam: 'yourOtherValue',
-        //     })
-        // })
+            // TODO: SEND TO SERVER AND WAIT FOR RESPONSE
+            fetch('https://neu1fmwq5k.execute-api.us-east-1.amazonaws.com/default/gd-SignUp', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: json
+            }).then(function (response) {
+                return response.json();
+            }).then(function (myJson) {
+                console.log(JSON.stringify(myJson));
+            });
+        });
     }
 
     return (
@@ -94,7 +94,7 @@ export function Signup() {
                         downloadable="false" />
                 </CardContent>
                 <CardActions>
-                    <Button variant="contained" color="primary" onClick={signIn}>Sign in</Button>
+                    <Button variant="contained" color="primary" onClick={signUp}>Sign up</Button>
                 </CardActions>
             </Card>
         </Container>
