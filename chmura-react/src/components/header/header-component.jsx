@@ -5,8 +5,11 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import { useStateValue } from '../../context/user-state-provider';
+import { HeaderButtons } from './header-buttons/header-buttons-component';
 
 export function Header() {
+    const [userState, dispatch] = useStateValue();
     return (
         <AppBar position="static">
             <Grid
@@ -23,8 +26,7 @@ export function Header() {
                     </Toolbar>
                 </Grid>
                 <Grid item>
-                    <Button component={props => <Link to="/" {...props}/>} color="inherit">Signup</Button>
-                    <Button component={props => <Link to="/login" {...props}/>} color="inherit">Login</Button>
+                    <HeaderButtons isLogged={userState.isLogged} />
                 </Grid>
             </Grid>
         </AppBar>

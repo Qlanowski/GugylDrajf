@@ -21,7 +21,7 @@ export function Signup() {
         if (eventArgs.duration > 0)
             recordBlobs.push(eventArgs.audioData);
         console.log(recordBlobs.length);
-        console.log(recordBlobs);
+            console.log(recordBlobs);
     };
 
     let onIdChange = (event) => {
