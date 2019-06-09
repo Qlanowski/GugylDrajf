@@ -9,19 +9,19 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Container from '@material-ui/core/Container';
 import AudioRecorder from 'react-audio-recorder';
-import base64 from 'base-64'
+import * as audioRequestService from '../../services/audio-request-service';
+import * as audioProcessingService from '../../services/audio-processing-service';
+import { useStateValue } from '../../context/user-state-provider';
 
-export function Signup() {
+export function Signup(props) {
     let recordBlobs = [];
     let userId = "";
     let email = "";
+    const [userState, dispatch] = useStateValue();
 
     let onAudioChange = (eventArgs) => {
-        console.log(eventArgs);
         if (eventArgs.duration > 0)
             recordBlobs.push(eventArgs.audioData);
-        console.log(recordBlobs.length);
-        console.log(recordBlobs);
     };
 
     let onIdChange = (event) => {
@@ -32,44 +32,16 @@ export function Signup() {
         email = event.target.value;
     }
 
-    let signUp = () => {
-        let base64files = [];
-
-        var promise1 = new Promise(function (resolve, reject) {
-            for (let blob of recordBlobs) {
-                let reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onloadend = function () {
-                    let base64data = reader.result;
-                    base64files.push(base64data);
-                    if (base64files.length === recordBlobs.length)
-                        resolve(base64files);
-                }
-            }
+    const signUp = async () => {
+        const base64files = await audioProcessingService.blobsToBase64Data(recordBlobs);
+        //const myJson = await audioRequestService.signUp(name, base64files);
+        dispatch({
+            type: 'setUser',
+            name
         });
-
-        promise1.then((base64files) => {
-            let json = JSON.stringify({
-                id: userId,
-                email: email,
-                audioSamples: base64files,
-            });
-
-            // TODO: SEND TO SERVER AND WAIT FOR RESPONSE
-            fetch('https://neu1fmwq5k.execute-api.us-east-1.amazonaws.com/default/gd-SignUp', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: json
-            }).then(function (response) {
-                return response.json();
-            }).then(function (myJson) {
-                console.log(JSON.stringify(myJson));
-            });
-        });
+        props.history.push('/')
     }
+
 
     return (
         <Container maxWidth="md">
