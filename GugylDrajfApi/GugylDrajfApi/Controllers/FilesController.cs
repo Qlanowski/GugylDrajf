@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GugylDrajfApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GugylDrajfApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FilesController : ControllerBase
@@ -24,8 +26,7 @@ namespace GugylDrajfApi.Controllers
         {
             try
             {
-                //azureId
-                var azureId = "demouser";
+                var azureId = User.Claims.FirstOrDefault(c=>c.Type=="azureId").Value;
                 IFormFile file = Request.Form.Files[0];
                 if (file.Length > 0)
                 {

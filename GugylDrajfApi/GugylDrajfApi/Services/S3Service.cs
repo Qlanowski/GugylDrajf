@@ -1,8 +1,10 @@
 ﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using GugylDrajfApi.Helpers;
 using GugylDrajfApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,13 +16,13 @@ namespace GugylDrajfApi.Services
 {
     public class S3Service:IS3Service
     {
-        //TODO: move to settings
-        private readonly string bucketName = "gugyldrajf-files";
         private readonly IAmazonS3 _client;
+        private readonly AppSettings _appSettings;
 
-        public S3Service(IAmazonS3 client)
+        public S3Service(IAmazonS3 client, IOptions<AppSettings> appSettings)
         {
             _client = client;
+            _appSettings = appSettings.Value;
         }
 
         public async Task<S3Response> UploadFileToS3(string azureId,IFormFile file)
@@ -35,7 +37,7 @@ namespace GugylDrajfApi.Services
                     {
                         InputStream = newMemoryStream,
                         Key = $"{azureId}/{file.FileName}",
-                        BucketName = bucketName,
+                        BucketName = _appSettings.BucketName,
                         CannedACL = S3CannedACL.Private
                     };
 

@@ -40,15 +40,5 @@ namespace GugylDrajfApi.Services
 
             return tokenHandler.WriteToken(token);
         }
-
-        public IEnumerable<User> GetAll()
-        {
-            // return users without passwords
-            //return _users.Select(x => {
-            //    x.Password = null;
-            //    return x;
-            //});
-            return null;
-        }
     }
 }
