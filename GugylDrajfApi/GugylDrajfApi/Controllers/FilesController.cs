@@ -39,8 +39,7 @@ namespace GugylDrajfApi.Controllers
                 Console.WriteLine(e.Message);
                 return StatusCode(500);
             }
-            
-
+   
         }
 
     }
