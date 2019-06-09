@@ -20,6 +20,25 @@ namespace GugylDrajfApi.Controllers
         {
             _service = service;
         }
+
+        [HttpGet]
+        [Route("names")]
+        public async Task<IActionResult> GetAllNames()
+        {
+            var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+            var files = await _service.FileNames(azureId);
+            return Ok(files);
+        }
+
+
+        [HttpGet]
+        [Route("{filename}")]
+        public async Task<IActionResult> DownloadFile(string filename)
+        {
+            var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+            var file = await _service.DownloadFile(azureId, filename);
+            return File(file.stream,file.contentType,filename);
+        }
         
         [HttpPost]
         public async Task<IActionResult> Upload()

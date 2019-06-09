@@ -1,9 +1,11 @@
 ﻿using Amazon;
 using Amazon.S3;
+using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using GugylDrajfApi.Helpers;
 using GugylDrajfApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,48 @@ namespace GugylDrajfApi.Services
         {
             _client = client;
             _appSettings = appSettings.Value;
+        }
+
+        public async Task<(MemoryStream stream,string contentType)> DownloadFile(string azureId, string filename)
+        {
+            try
+            {
+                var request = new GetObjectRequest
+                {
+                    BucketName = _appSettings.BucketName,
+                    Key = $"{azureId}/{filename}"
+                };
+                var memory = new MemoryStream();
+                using (var response = await _client.GetObjectAsync(request))
+                using (var responseStream = response.ResponseStream)
+                using (var reader =  new StreamReader(responseStream))
+                {
+                    string contentType = response.Headers["Content-Type"];
+                    await responseStream.CopyToAsync(memory);
+                    return (memory,contentType);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return (null,null);
+        }
+
+        public async Task<IEnumerable<string>> FileNames(string azureId)
+        {
+            var names = new List<string>();
+            ListObjectsV2Request lor = new ListObjectsV2Request()
+            {
+                BucketName = _appSettings.BucketName,
+                Prefix = azureId + "/"
+            };
+            var objectListing = await _client.ListObjectsV2Async(lor);
+            foreach (var obj in objectListing.S3Objects)
+            {
+                names.Add(obj.Key.Split("/")[1]);
+            }
+            return names;
         }
 
         public async Task<S3Response> UploadFileToS3(string azureId,IFormFile file)
