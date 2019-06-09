@@ -35,9 +35,21 @@ namespace GugylDrajfApi.Controllers
         [Route("{filename}")]
         public async Task<IActionResult> DownloadFile(string filename)
         {
-            var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
-            var file = await _service.DownloadFile(azureId, filename);
-            return File(file.stream,file.contentType,filename);
+            //TODO
+            try
+            {
+                var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+                //var azureId = "asldkj23jljkads";
+                var file = await _service.DownloadFile(azureId, filename);
+                var f= File(file.stream,file.contentType,filename);
+                return f;
+
+            }
+            catch ( Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return Ok();    
+            }
         }
         
         [HttpPost]
