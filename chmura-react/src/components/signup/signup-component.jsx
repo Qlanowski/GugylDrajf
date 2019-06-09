@@ -9,10 +9,12 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Container from '@material-ui/core/Container';
 import AudioRecorder from 'react-audio-recorder';
+import base64 from 'base-64'
 
-export function Login() {
+export function Signup() {
     let recordBlobs = [];
     let userId = "";
+    let email = "";
 
     let onAudioChange = (eventArgs) => {
         console.log(eventArgs);
@@ -26,7 +28,11 @@ export function Login() {
         userId = event.target.value;
     }
 
-    let logIn = () => {
+    let onEmailChange = (event) => {
+        email = event.target.value;
+    }
+
+    let signUp = () => {
         let base64files = [];
 
         var promise1 = new Promise(function (resolve, reject) {
@@ -45,11 +51,11 @@ export function Login() {
         promise1.then((base64files) => {
             let json = JSON.stringify({
                 id: userId,
+                email: email,
                 audioSamples: base64files,
             });
 
             // TODO: SEND TO SERVER AND WAIT FOR RESPONSE
-            // TODO: CHANGE ENDPOINT
             fetch('https://neu1fmwq5k.execute-api.us-east-1.amazonaws.com/default/gd-SignUp', {
                 method: 'POST',
                 headers: {
@@ -65,7 +71,6 @@ export function Login() {
         });
     }
 
-
     return (
         <Container maxWidth="md">
             <Card>
@@ -75,13 +80,24 @@ export function Login() {
                         margin="normal"
                         variant="outlined"
                         onChange={onIdChange} />
+                    <TextField id="outlined-with-placeholder"
+                        onChange={onEmailChange}
+                        label="E-mail"
+                        margin="normal"
+                        variant="outlined" />
+                    <Typography variant="body2" component="p">Your phrase:  <b>"Houston we have had a problem"</b></Typography>
+                    <AudioRecorder onChange={onAudioChange}
+                        downloadable="false" />
+                    <AudioRecorder onChange={onAudioChange}
+                        downloadable="false" />
                     <AudioRecorder onChange={onAudioChange}
                         downloadable="false" />
                 </CardContent>
                 <CardActions>
-                    <Button variant="contained" color="primary" onClick={logIn}>Log in</Button>
-                </CardActions >
+                    <Button variant="contained" color="primary" onClick={signUp}>Sign up</Button>
+                </CardActions>
             </Card>
         </Container>
+
     );
 }
