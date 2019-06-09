@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <UserSecretsId>001457f2-9d68-43bc-b4b9-8a7a91e4eaa2</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +15,9 @@
     <PackageReference Include="AWSSDK.S3" Version="3.3.102.12" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.5.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="NAudio" Version="1.9.0" />
   </ItemGroup>
 
 </Project>

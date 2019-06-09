@@ -9,5 +9,7 @@ namespace GugylDrajfApi.Repositories
     public interface IUserRepository
     {
         Task<IEnumerable<User>> GetAllUsers();
+
+        void AddUser(User user);
     }
 }
