@@ -9,6 +9,5 @@ namespace GugylDrajfApi.Services
     public interface IUserService
     {
         string GenerateToken(string login, string azureId, string email);
-        IEnumerable<User> GetAll();
     }
 }

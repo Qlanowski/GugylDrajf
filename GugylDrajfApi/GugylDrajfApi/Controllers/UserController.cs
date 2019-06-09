@@ -22,7 +22,6 @@ namespace GugylDrajfApi.Controllers
             _userService = userService;
         }
 
-
         [AllowAnonymous]
         [HttpPost]
         public IActionResult Authenticate()
@@ -33,15 +32,6 @@ namespace GugylDrajfApi.Controllers
                 return BadRequest(new { message = "Can't authenticate." });
 
             return Ok(token);
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var users = _userService.GetAll();
-            //User.Claims.FirstOrDefault(c => c.Type == "Currency").Value
-            var a = User.Claims;
-            return Ok(users);
         }
     }
 }
