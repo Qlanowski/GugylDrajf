@@ -63,10 +63,11 @@ namespace GugylDrajfApi.Controllers
                 });
             }
 
-            var responses = new List<HttpStatusCode>();
             foreach (var file in files)
             {
-                responses.Add(await CreateEnrollment(azureId, file));
+                var response = await CreateEnrollment(azureId, file);
+                if (!response.IsSuccessStatusCode)
+                    return StatusCode((int)response.StatusCode);
             }
 
             return Ok();
@@ -101,7 +102,7 @@ namespace GugylDrajfApi.Controllers
             }
         }
 
-        static async Task<HttpStatusCode> CreateEnrollment(string identificationProfileId, IFormFile audioFile)
+        static async Task<HttpResponseMessage> CreateEnrollment(string identificationProfileId, IFormFile audioFile)
         {
             var client = new HttpClient();
             var queryString = HttpUtility.ParseQueryString(string.Empty);
@@ -129,8 +130,9 @@ namespace GugylDrajfApi.Controllers
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
                 response = await client.PostAsync(uri, content);
-                dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-                return response.StatusCode;
+                // DEBUG - uncomment for better json reading feeling
+                // dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+                return response;
             }
 
         }
