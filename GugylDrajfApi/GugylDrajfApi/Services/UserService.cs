@@ -11,11 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GugylDrajfApi.Services
-{ 
+{
     public class UserService : IUserService
     {
-        // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-
         private readonly AppSettings _appSettings;
 
         public UserService(IOptions<AppSettings> appSettings)
@@ -23,31 +21,22 @@ namespace GugylDrajfApi.Services
             _appSettings = appSettings.Value;
         }
 
-        public string Authenticate(string username, string password)
+        public string GenerateToken(string login, string azureId, string email)
         {
-            //var user = _users.SingleOrDefault(x => x.Username == username && x.Password == password);
-
-            // return null if user not found
-           // if (user == null)
-            //    return null;
-
-            // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, "azureId-value")
+                    new Claim("azureId", azureId),
+                    new Claim("login", login),
+                    new Claim("email", email),
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            //user.Token = tokenHandler.WriteToken(token);
-
-            //// remove password before returning
-            //user.Password = null;
 
             return tokenHandler.WriteToken(token);
         }

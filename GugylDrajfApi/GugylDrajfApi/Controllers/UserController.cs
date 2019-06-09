@@ -25,20 +25,22 @@ namespace GugylDrajfApi.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Authenticate([FromBody]User userParam)
+        public IActionResult Authenticate()
         {
-            var user = _userService.Authenticate(userParam.Login, userParam.AzureId);
+            var token = _userService.GenerateToken("karol", "asldkj23jljkads","karol@wp.pl");
 
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+            if (token == null)
+                return BadRequest(new { message = "Can't authenticate." });
 
-            return Ok(user);
+            return Ok(token);
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
+            //User.Claims.FirstOrDefault(c => c.Type == "Currency").Value
+            var a = User.Claims;
             return Ok(users);
         }
     }
