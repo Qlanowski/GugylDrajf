@@ -3,11 +3,14 @@ using GugylDrajfApi.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -36,13 +39,6 @@ namespace GugylDrajfApi.Controllers
             return await _repo.GetAllUsers();
         }
 
-        // POST: api/SignUp
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-
-        }
-
         // POST: api/SignUp/login/email
         [HttpPost("{login}/{email}")]
         public async Task<IActionResult> Post(string login, string email)
@@ -59,7 +55,7 @@ namespace GugylDrajfApi.Controllers
                 if (azureId == null)
                     return BadRequest();
 
-                users.Append(new User()
+                _repo.AddUser(new User()
                 {
                     AzureId = azureId,
                     Login = login,
@@ -67,9 +63,10 @@ namespace GugylDrajfApi.Controllers
                 });
             }
 
+            var responses = new List<HttpStatusCode>();
             foreach (var file in files)
             {
-                CreateEnrollment(azureId, file);
+                responses.Add(await CreateEnrollment(azureId, file));
             }
 
             return Ok();
@@ -98,13 +95,13 @@ namespace GugylDrajfApi.Controllers
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-                    return responseJson.identificationProfileId;
+                    return responseJson.verificationProfileId;
                 }
                 return null;
             }
         }
 
-        static async void CreateEnrollment(string identificationProfileId, IFormFile audioFile)
+        static async Task<HttpStatusCode> CreateEnrollment(string identificationProfileId, IFormFile audioFile)
         {
             var client = new HttpClient();
             var queryString = HttpUtility.ParseQueryString(string.Empty);
@@ -120,32 +117,22 @@ namespace GugylDrajfApi.Controllers
             HttpResponseMessage response;
 
             // Request body
-            // TU JAKOS PLIK TRZEBEA DODAC?
-            byte[] byteData;
+            byte[] convertedWav;
             using (var br = new BinaryReader(audioFile.OpenReadStream()))
             {
-                byteData = br.ReadBytes((int)audioFile.OpenReadStream().Length);
+                var rawData = br.ReadBytes((int)audioFile.OpenReadStream().Length);
+                convertedWav = WavConverter.ConvertToAzureWav(rawData);
             }
             //byte[] byteData = Encoding.UTF8.GetBytes;
 
-            using (var content = new ByteArrayContent(byteData))
+            using (var content = new ByteArrayContent(convertedWav))
             {
-                content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data"); // A TU JAKIS TYP
+                content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
                 response = await client.PostAsync(uri, content);
+                dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+                return response.StatusCode;
             }
 
-        }
-
-        // PUT: api/SignUp/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
