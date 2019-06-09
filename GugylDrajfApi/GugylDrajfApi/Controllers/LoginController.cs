@@ -1,5 +1,6 @@
 ﻿using GugylDrajfApi.Models;
 using GugylDrajfApi.Repositories;
+using GugylDrajfApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -22,11 +23,13 @@ namespace GugylDrajfApi.Controllers
     {
         private IUserRepository _repo;
         private static IConfiguration _config;
+        private static IUserService _userService;
 
-        public LoginController(IUserRepository repo, IConfiguration config)
+        public LoginController(IUserRepository repo, IConfiguration config, IUserService userService)
         {
             _repo = repo;
             _config = config;
+            _userService = userService;
         }
 
         // POST: api/Login/login
@@ -37,21 +40,23 @@ namespace GugylDrajfApi.Controllers
             if (files.Count != 1)
                 return BadRequest();
 
-            var users = await _repo.GetAllUsers();
-            var azureId = users.Where(u => u.Login == login)?.Select(u => u.AzureId).FirstOrDefault();
-            if (azureId == null)
+            var user = (await _repo.GetAllUsers()).Where(u => u.Login == login).FirstOrDefault();
+            
+            if (user == null)
             {
                 return BadRequest();
             }
 
-
-            var response = await Verify(azureId, files[0]);
+            var response = await Verify(user.AzureId, files[0]);
             if (!response.IsSuccessStatusCode)
                 return StatusCode((int)response.StatusCode);
 
             dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+            if (responseJson.result == false)
+                return BadRequest("It is not you, you liar!");
 
-            return Ok(responseJson);
+            var token = _userService.GenerateToken(user.Login, user.AzureId, user.Email);
+            return Ok(token);
         }
 
         private async Task<HttpResponseMessage> Verify(string verificationProfileId, IFormFile audioFile)
