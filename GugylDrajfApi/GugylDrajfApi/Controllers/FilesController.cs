@@ -70,7 +70,7 @@ namespace GugylDrajfApi.Controllers
                 if (file.Length > 0)
                 {
                    var response = await _service.UploadFileToS3(azureId,file);
-                   return StatusCode((int)response.Status);
+                   return StatusCode((int)response.Status, new { Filename = file.FileName });
                 }
                 return BadRequest();
             }
