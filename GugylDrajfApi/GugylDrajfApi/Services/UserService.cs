@@ -60,15 +60,5 @@ namespace GugylDrajfApi.Services
             }
             return tokenContent;
         }
-        private async Task<string> GetKey()
-        {
-            var request = new GetSecretValueRequest
-            {
-                SecretId = _appSettings.JWTSecret
-            };
-
-            var response = await _secretsService.GetSecretValueAsync(request);
-            return response.SecretString;
-        }
     }
 }
