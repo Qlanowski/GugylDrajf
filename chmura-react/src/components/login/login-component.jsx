@@ -26,6 +26,7 @@ export function Login(props) {
     const logIn = async () => {
         const base64files = await audioProcessingService.blobsToBase64Data(recordBlobs);
         //const myJson = await audioRequestService.signUp(name, base64files);
+        console.log('dd');
         dispatch({
             type: 'setUser',
             name
