@@ -30,7 +30,7 @@ namespace GugylDrajfApi.Services
             string tokenContent = null;
             try
             {
-                var secret = await _secretsService.GetSecret(_appSettings.JWTSecret);
+                var secret = await _secretsService.GetSecret(_appSettings.JwtKey);
                 var key = Encoding.ASCII.GetBytes(secret);
                 
                 var tokenDescriptor = new SecurityTokenDescriptor
