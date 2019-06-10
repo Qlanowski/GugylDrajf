@@ -1,6 +1,7 @@
 ﻿using GugylDrajfApi.Helpers;
 using GugylDrajfApi.Models;
 using GugylDrajfApi.Repositories;
+using GugylDrajfApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -27,13 +28,13 @@ namespace GugylDrajfApi.Controllers
     {
         private readonly IUserRepository _repo;
         private readonly AppSettings _appSettings;
-        private readonly ISecretsService _secretsService;
+        private readonly ISecretService _secretService;
 
-        public SignUpController(IUserRepository repo, IOptions<AppSettings> appSettings,ISecretsService secretsService)
+        public SignUpController(IUserRepository repo, IOptions<AppSettings> appSettings,ISecretService secretService)
         {
             _repo = repo;
             _appSettings = appSettings.Value;
-            _secretsService = secretsService;
+            _secretService = secretService;
         }
 
         // GET: api/SignUp
@@ -83,7 +84,7 @@ namespace GugylDrajfApi.Controllers
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            string azureKey = await _secretsService.GetSecret(_appSettings.CognitiveServiceKey); //_config["CognitiveServiceKey"];
+            string azureKey = await _secretService.GetSecret(_appSettings.CognitiveServiceKey); //_config["CognitiveServiceKey"];
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureKey);
 
             var uri = "https://westus.api.cognitive.microsoft.com/spid/v1.0/verificationProfiles?" + queryString;
@@ -112,7 +113,7 @@ namespace GugylDrajfApi.Controllers
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            string azureKey = await _secretsService.GetSecret(_appSettings.CognitiveServiceKey);
+            string azureKey = await _secretService.GetSecret(_appSettings.CognitiveServiceKey);
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureKey);
 
             // Request parameters

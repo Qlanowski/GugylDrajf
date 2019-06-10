@@ -26,14 +26,14 @@ namespace GugylDrajfApi.Controllers
         private IUserRepository _repo;
         private AppSettings _appSettings;
         private IUserService _userService;
-        private ISecretsService _secretsService;
+        private ISecretService _secretService;
 
-        public LoginController(IUserRepository repo, IUserService userService,IOptions<AppSettings> appSettings,ISecretsService secretsService)
+        public LoginController(IUserRepository repo, IUserService userService,IOptions<AppSettings> appSettings,ISecretService secretService)
         {
             _repo = repo;
             _appSettings = appSettings.Value;
             _userService = userService;
-            _secretsService = secretsService;
+            _secretService = secretService;
         }
 
         // POST: api/Login/login
@@ -88,7 +88,7 @@ namespace GugylDrajfApi.Controllers
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            string azureKey = await _secretsService.GetSecret(_appSettings.CognitiveServiceKey);// _config["CognitiveServiceKey"];
+            string azureKey = await _secretService.GetSecret(_appSettings.CognitiveServiceKey);// _config["CognitiveServiceKey"];
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureKey);
 
             var uri = $"https://westus.api.cognitive.microsoft.com/spid/v1.0/verify?verificationProfileId={verificationProfileId}&" + queryString;
