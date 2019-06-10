@@ -24,9 +24,9 @@ namespace GugylDrajfApi.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Authenticate()
+        public async Task<IActionResult> Authenticate()
         {
-            var token = _userService.GenerateToken("karol", "asldkj23jljkads","karol@wp.pl");
+            var token = await _userService.GenerateToken("karol", "asldkj23jljkads","karol@wp.pl");
 
             if (token == null)
                 return BadRequest(new { message = "Can't authenticate." });

@@ -7,6 +7,7 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.S3;
+using Amazon.SecretsManager;
 using GugylDrajfApi.Helpers;
 using GugylDrajfApi.Repositories;
 using GugylDrajfApi.Services;
@@ -65,6 +66,7 @@ namespace GugylDrajfApi
 
             services.AddAWSService<IAmazonDynamoDB>();
             services.AddAWSService<IAmazonS3>();
+            services.AddAWSService<IAmazonSecretsManager>();
             services.AddDefaultAWSOptions(
                 new AWSOptions
                 {

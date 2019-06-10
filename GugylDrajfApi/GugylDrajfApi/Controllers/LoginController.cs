@@ -55,7 +55,7 @@ namespace GugylDrajfApi.Controllers
             if (responseJson.result == false)
                 return BadRequest("It is not you, you liar!");
 
-            var token = _userService.GenerateToken(user.Login, user.AzureId, user.Email);
+            var token = await _userService.GenerateToken(user.Login, user.AzureId, user.Email);
             return Ok(token);
         }
 
@@ -74,7 +74,7 @@ namespace GugylDrajfApi.Controllers
                 return BadRequest("User doesn't exists");
             }
 
-            var token = _userService.GenerateToken(user.Login, user.AzureId, user.Email);
+            var token = await _userService.GenerateToken(user.Login, user.AzureId, user.Email);
             return Ok(token);
         }
 

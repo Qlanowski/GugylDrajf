@@ -13,6 +13,7 @@
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.101.22" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.100.1" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.102.12" />
+    <PackageReference Include="AWSSDK.SecretsManager" Version="3.3.100.31" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.5.1" />
