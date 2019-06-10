@@ -1,9 +1,11 @@
-﻿using GugylDrajfApi.Models;
+﻿using GugylDrajfApi.Helpers;
+using GugylDrajfApi.Models;
 using GugylDrajfApi.Repositories;
 using GugylDrajfApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,14 +24,16 @@ namespace GugylDrajfApi.Controllers
     public class LoginController : ControllerBase
     {
         private IUserRepository _repo;
-        private static IConfiguration _config;
-        private static IUserService _userService;
+        private AppSettings _appSettings;
+        private IUserService _userService;
+        private ISecretsService _secretsService;
 
-        public LoginController(IUserRepository repo, IConfiguration config, IUserService userService)
+        public LoginController(IUserRepository repo, IUserService userService,IOptions<AppSettings> appSettings,ISecretsService secretsService)
         {
             _repo = repo;
-            _config = config;
+            _appSettings = appSettings.Value;
             _userService = userService;
+            _secretsService = secretsService;
         }
 
         // POST: api/Login/login
@@ -84,7 +88,7 @@ namespace GugylDrajfApi.Controllers
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            string azureKey = _config["CognitiveServiceKey"];
+            string azureKey = await _secretsService.GetSecret(_appSettings.CognitiveServiceKey);// _config["CognitiveServiceKey"];
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureKey);
 
             var uri = $"https://westus.api.cognitive.microsoft.com/spid/v1.0/verify?verificationProfileId={verificationProfileId}&" + queryString;

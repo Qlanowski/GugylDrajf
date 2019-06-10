@@ -9,5 +9,6 @@ namespace GugylDrajfApi.Helpers
     {
         public string Secret { get; set; }
         public string BucketName { get; set; }
+        public string CognitiveServiceKey { get; set; }
     }
 }

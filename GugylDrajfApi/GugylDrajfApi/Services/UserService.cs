@@ -17,12 +17,12 @@ namespace GugylDrajfApi.Services
     public class UserService : IUserService
     {
         private readonly AppSettings _appSettings;
-        private readonly IAmazonSecretsManager _secretsManager;
+        private readonly ISecretService _secretsService;
 
-        public UserService(IOptions<AppSettings> appSettings,IAmazonSecretsManager secretsManager)
+        public UserService(IOptions<AppSettings> appSettings, ISecretService secrets)
         {
             _appSettings = appSettings.Value;
-            _secretsManager = secretsManager;
+            _secretsService = secrets;
         }
 
         public async Task<string> GenerateToken(string login, string azureId, string email)
@@ -30,7 +30,8 @@ namespace GugylDrajfApi.Services
             string tokenContent = null;
             try
             {
-                var key = Encoding.ASCII.GetBytes(await GetKey());
+                var secret = await _secretsService.GetSecret(_appSettings.Secret);
+                var key = Encoding.ASCII.GetBytes(secret);
                 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -66,7 +67,7 @@ namespace GugylDrajfApi.Services
                 SecretId = _appSettings.Secret
             };
 
-            var response = await _secretsManager.GetSecretValueAsync(request);
+            var response = await _secretsService.GetSecretValueAsync(request);
             return response.SecretString;
         }
     }

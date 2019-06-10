@@ -76,6 +76,7 @@ namespace GugylDrajfApi
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IS3Service, S3Service>();
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<ISecretService, SecretService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
