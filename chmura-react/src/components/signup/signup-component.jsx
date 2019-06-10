@@ -33,12 +33,8 @@ export function Signup(props) {
     }
 
     const signUp = async () => {
-        const base64files = await audioProcessingService.blobsToBase64Data(recordBlobs);
-        //const myJson = await audioRequestService.signUp(name, base64files);
-        dispatch({
-            type: 'setUser',
-            name
-        });
+        //const base64files = await audioProcessingService.blobsToBase64Data(recordBlobs);
+        let responseJson = await audioRequestService.signUp(userId, email, recordBlobs);
         props.history.push('/')
     }
 

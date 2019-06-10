@@ -18,7 +18,8 @@ export function Root() {
             return {
               ...state,
               isLogged: true,
-              name: action.name
+              name: action.name,
+              token: action.token
             };
             
           default:

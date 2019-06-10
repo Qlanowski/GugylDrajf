@@ -41,10 +41,10 @@ namespace GugylDrajfApi.Controllers
                 return BadRequest();
 
             var user = (await _repo.GetAllUsers()).Where(u => u.Login == login).FirstOrDefault();
-            
+
             if (user == null)
             {
-                return BadRequest();
+                return BadRequest("User doesn't exists");
             }
 
             var response = await Verify(user.AzureId, files[0]);
@@ -54,6 +54,25 @@ namespace GugylDrajfApi.Controllers
             dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
             if (responseJson.result == false)
                 return BadRequest("It is not you, you liar!");
+
+            var token = _userService.GenerateToken(user.Login, user.AzureId, user.Email);
+            return Ok(token);
+        }
+
+        // POST: api/Login/tokendebug/login
+        [HttpPost("tokendebug/{login}")]
+        public async Task<IActionResult> GetTokenDebug(string login)
+        {
+            var files = Request.Form.Files;
+            if (files.Count != 1)
+                return BadRequest();
+
+            var user = (await _repo.GetAllUsers()).Where(u => u.Login == login).FirstOrDefault();
+
+            if (user == null)
+            {
+                return BadRequest("User doesn't exists");
+            }
 
             var token = _userService.GenerateToken(user.Login, user.AzureId, user.Email);
             return Ok(token);
