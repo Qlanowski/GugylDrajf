@@ -41,15 +41,23 @@ namespace GugylDrajfApi.Controllers
                 var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
                 //var azureId = "asldkj23jljkads";
                 var file = await _service.DownloadFile(azureId, filename);
-                var f= File(file.stream,file.contentType,filename);
+                var f = File(file.stream, file.contentType, filename);
                 return f;
 
             }
-            catch ( Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return Ok();    
+                return Ok();
             }
+        }
+
+        [HttpGet]
+        [Route("fileurl/{filename}")]
+        public string GetDownloadFileLink(string filename)
+        {
+            var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+            return _service.GetDownloadFileUrl(azureId, filename);
         }
         
         [HttpPost]
