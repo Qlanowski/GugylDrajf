@@ -24,12 +24,12 @@ export function Login(props) {
     };
 
     const logIn = async () => {
-        const base64files = await audioProcessingService.blobsToBase64Data(recordBlobs);
-        //const myJson = await audioRequestService.signUp(name, base64files);
-        console.log('dd');
+        const token = await audioRequestService.login(name, recordBlobs[0]);
+        console.log(token);
         dispatch({
             type: 'setUser',
-            name
+            name,
+            token
         });
         props.history.push('/')
     }

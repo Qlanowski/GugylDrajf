@@ -22,5 +22,10 @@ namespace GugylDrajfApi.Repositories
             var users = await _ctx.ScanAsync<User>(new List<ScanCondition>()).GetRemainingAsync();
             return users;
         }
+
+        public async void AddUser(User user)
+        {
+            await _ctx.SaveAsync(user);
+        }
     }
 }

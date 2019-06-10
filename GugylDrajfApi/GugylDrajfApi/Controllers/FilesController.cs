@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GugylDrajfApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GugylDrajfApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FilesController : ControllerBase
@@ -18,14 +20,44 @@ namespace GugylDrajfApi.Controllers
         {
             _service = service;
         }
+
+        [HttpGet]
+        [Route("names")]
+        public async Task<IActionResult> GetAllNames()
+        {
+            var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+            var files = await _service.FileNames(azureId);
+            return Ok(files);
+        }
+
+
+        [HttpGet]
+        [Route("{filename}")]
+        public async Task<IActionResult> DownloadFile(string filename)
+        {
+            //TODO
+            try
+            {
+                var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+                //var azureId = "asldkj23jljkads";
+                var file = await _service.DownloadFile(azureId, filename);
+                var f= File(file.stream,file.contentType,filename);
+                return f;
+
+            }
+            catch ( Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return Ok();    
+            }
+        }
         
         [HttpPost]
         public async Task<IActionResult> Upload()
         {
             try
             {
-                //azureId
-                var azureId = "demouser";
+                var azureId = User.Claims.FirstOrDefault(c=>c.Type=="azureId").Value;
                 IFormFile file = Request.Form.Files[0];
                 if (file.Length > 0)
                 {
@@ -39,8 +71,7 @@ namespace GugylDrajfApi.Controllers
                 Console.WriteLine(e.Message);
                 return StatusCode(500);
             }
-            
-
+   
         }
 
     }
