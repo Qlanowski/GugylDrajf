@@ -7,7 +7,7 @@ namespace GugylDrajfApi.Helpers
 {
     public class AppSettings
     {
-        public string Secret { get; set; }
+        public string JWTSecret { get; set; }
         public string BucketName { get; set; }
         public string CognitiveServiceKey { get; set; }
     }
