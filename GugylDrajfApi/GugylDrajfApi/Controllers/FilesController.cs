@@ -31,30 +31,30 @@ namespace GugylDrajfApi.Controllers
         }
 
 
+        //[HttpGet]
+        //[Route("{filename}")]
+        //public async Task<IActionResult> DownloadFile(string filename)
+        //{
+        //    //TODO
+        //    try
+        //    {
+        //        var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+        //        //var azureId = "asldkj23jljkads";
+        //        var file = await _service.DownloadFile(azureId, filename);
+        //        var f = File(file.stream, file.contentType, filename);
+        //        return f;
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //        return Ok();
+        //    }
+        //}
+
         [HttpGet]
         [Route("{filename}")]
-        public async Task<IActionResult> DownloadFile(string filename)
-        {
-            //TODO
-            try
-            {
-                var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
-                //var azureId = "asldkj23jljkads";
-                var file = await _service.DownloadFile(azureId, filename);
-                var f = File(file.stream, file.contentType, filename);
-                return f;
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return Ok();
-            }
-        }
-
-        [HttpGet]
-        [Route("fileurl/{filename}")]
-        public string GetDownloadFileLink(string filename)
+        public string GetDownloadFileUrl(string filename)
         {
             var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
             return _service.GetDownloadFileUrl(azureId, filename);
