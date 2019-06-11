@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid';
 import { useStateValue } from '../../context/user-state-provider';
 import { HeaderButtons } from './header-buttons/header-buttons-component';
+import logo from './logo.png'
 
 export function Header() {
     const [userState, dispatch] = useStateValue();
@@ -22,9 +23,7 @@ export function Header() {
             >
                 <Grid item>
                     <Toolbar>
-                        <Typography color="inherit">
-                            Gugyl drajf
-                    </Typography>
+                        <img src={logo} height="75px"/>
                     </Toolbar>
                 </Grid>
                 <Grid item>
