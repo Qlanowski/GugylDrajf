@@ -1,4 +1,6 @@
-﻿using GugylDrajfApi.Helpers;
+﻿using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
+using GugylDrajfApi.Helpers;
 using GugylDrajfApi.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -15,30 +17,48 @@ namespace GugylDrajfApi.Services
     public class UserService : IUserService
     {
         private readonly AppSettings _appSettings;
+        private readonly ISecretService _secretsService;
 
-        public UserService(IOptions<AppSettings> appSettings)
+        public UserService(IOptions<AppSettings> appSettings, ISecretService secrets)
         {
             _appSettings = appSettings.Value;
+            _secretsService = secrets;
         }
 
-        public string GenerateToken(string login, string azureId, string email)
+        public async Task<string> GenerateToken(string login, string azureId, string email)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            string tokenContent = null;
+            try
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                var secret = await _secretsService.GetSecret(_appSettings.JwtKey);
+                var key = Encoding.ASCII.GetBytes(secret);
+                
+                var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    new Claim("azureId", azureId),
-                    new Claim("login", login),
-                    new Claim("email", email),
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim("azureId", azureId),
+                        new Claim("login", login),
+                        new Claim("email", email),
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
 
-            return tokenHandler.WriteToken(token);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+
+                tokenContent= tokenHandler.WriteToken(token);
+            }
+            catch(AmazonSecretsManagerException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return tokenContent;
         }
     }
 }

@@ -7,6 +7,8 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.S3;
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
 using GugylDrajfApi.Helpers;
 using GugylDrajfApi.Repositories;
 using GugylDrajfApi.Services;
@@ -44,7 +46,15 @@ namespace GugylDrajfApi
 
             // configure jwt authentication
             var appSettings = appSettingsSection.Get<AppSettings>();
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            var request = new GetSecretValueRequest
+            {
+                SecretId = appSettings.JwtKey
+            };
+
+            IAmazonSecretsManager _secretsManager = new AmazonSecretsManagerClient(RegionEndpoint.GetBySystemName(appSettings.Region));
+            var response =  _secretsManager.GetSecretValueAsync(request).GetAwaiter().GetResult();
+
+            var key = Encoding.ASCII.GetBytes(response.SecretString);
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -65,15 +75,17 @@ namespace GugylDrajfApi
 
             services.AddAWSService<IAmazonDynamoDB>();
             services.AddAWSService<IAmazonS3>();
+            services.AddAWSService<IAmazonSecretsManager>();
             services.AddDefaultAWSOptions(
                 new AWSOptions
                 {
-                    Region = RegionEndpoint.GetBySystemName("eu-central-1")
+                    Region = RegionEndpoint.GetBySystemName(appSettings.Region)
                 });
 
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IS3Service, S3Service>();
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<ISecretService, SecretService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

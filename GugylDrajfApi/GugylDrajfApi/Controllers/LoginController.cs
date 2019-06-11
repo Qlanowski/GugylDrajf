@@ -1,9 +1,11 @@
-﻿using GugylDrajfApi.Models;
+﻿using GugylDrajfApi.Helpers;
+using GugylDrajfApi.Models;
 using GugylDrajfApi.Repositories;
 using GugylDrajfApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,14 +24,16 @@ namespace GugylDrajfApi.Controllers
     public class LoginController : ControllerBase
     {
         private IUserRepository _repo;
-        private static IConfiguration _config;
-        private static IUserService _userService;
+        private AppSettings _appSettings;
+        private IUserService _userService;
+        private ISecretService _secretService;
 
-        public LoginController(IUserRepository repo, IConfiguration config, IUserService userService)
+        public LoginController(IUserRepository repo, IUserService userService,IOptions<AppSettings> appSettings,ISecretService secretService)
         {
             _repo = repo;
-            _config = config;
+            _appSettings = appSettings.Value;
             _userService = userService;
+            _secretService = secretService;
         }
 
         // POST: api/Login/login
@@ -55,7 +59,7 @@ namespace GugylDrajfApi.Controllers
             if (responseJson.result == false)
                 return BadRequest("It is not you, you liar!");
 
-            var token = _userService.GenerateToken(user.Login, user.AzureId, user.Email);
+            var token = await _userService.GenerateToken(user.Login, user.AzureId, user.Email);
             return Ok(token);
         }
 
@@ -74,7 +78,7 @@ namespace GugylDrajfApi.Controllers
                 return BadRequest("User doesn't exists");
             }
 
-            var token = _userService.GenerateToken(user.Login, user.AzureId, user.Email);
+            var token = await _userService.GenerateToken(user.Login, user.AzureId, user.Email);
             return Ok(token);
         }
 
@@ -84,7 +88,7 @@ namespace GugylDrajfApi.Controllers
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            string azureKey = _config["CognitiveServiceKey"];
+            string azureKey = await _secretService.GetSecret(_appSettings.CognitiveServiceKey);// _config["CognitiveServiceKey"];
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureKey);
 
             var uri = $"https://westus.api.cognitive.microsoft.com/spid/v1.0/verify?verificationProfileId={verificationProfileId}&" + queryString;

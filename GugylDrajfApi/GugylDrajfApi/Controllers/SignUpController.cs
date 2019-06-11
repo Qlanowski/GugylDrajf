@@ -1,8 +1,11 @@
-﻿using GugylDrajfApi.Models;
+﻿using GugylDrajfApi.Helpers;
+using GugylDrajfApi.Models;
 using GugylDrajfApi.Repositories;
+using GugylDrajfApi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Newtonsoft.Json;
@@ -23,13 +26,15 @@ namespace GugylDrajfApi.Controllers
     [ApiController]
     public class SignUpController : ControllerBase
     {
-        private IUserRepository _repo;
-        private static IConfiguration _config;
+        private readonly IUserRepository _repo;
+        private readonly AppSettings _appSettings;
+        private readonly ISecretService _secretService;
 
-        public SignUpController(IUserRepository repo, IConfiguration config)
+        public SignUpController(IUserRepository repo, IOptions<AppSettings> appSettings,ISecretService secretService)
         {
             _repo = repo;
-            _config = config;
+            _appSettings = appSettings.Value;
+            _secretService = secretService;
         }
 
         // GET: api/SignUp
@@ -73,13 +78,13 @@ namespace GugylDrajfApi.Controllers
             return Ok();
         }
 
-        static async Task<string> CreateProfile()
+        private async Task<string> CreateProfile()
         {
             var client = new HttpClient();
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            string azureKey = _config["CognitiveServiceKey"];
+            string azureKey = await _secretService.GetSecret(_appSettings.CognitiveServiceKey); //_config["CognitiveServiceKey"];
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureKey);
 
             var uri = "https://westus.api.cognitive.microsoft.com/spid/v1.0/verificationProfiles?" + queryString;
@@ -102,13 +107,13 @@ namespace GugylDrajfApi.Controllers
             }
         }
 
-        static async Task<HttpResponseMessage> CreateEnrollment(string identificationProfileId, IFormFile audioFile)
+        private async Task<HttpResponseMessage> CreateEnrollment(string identificationProfileId, IFormFile audioFile)
         {
             var client = new HttpClient();
             var queryString = HttpUtility.ParseQueryString(string.Empty);
 
             // Request headers
-            string azureKey = _config["CognitiveServiceKey"];
+            string azureKey = await _secretService.GetSecret(_appSettings.CognitiveServiceKey);
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureKey);
 
             // Request parameters

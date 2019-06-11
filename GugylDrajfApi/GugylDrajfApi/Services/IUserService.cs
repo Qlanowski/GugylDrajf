@@ -8,6 +8,6 @@ namespace GugylDrajfApi.Services
 {
     public interface IUserService
     {
-        string GenerateToken(string login, string azureId, string email);
+        Task<string> GenerateToken(string login, string azureId, string email);
     }
 }
