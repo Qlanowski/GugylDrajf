@@ -86,9 +86,9 @@ namespace GugylDrajfApi.Services
             }
         }
 
-        public async Task<IEnumerable<string>> FileNames(string azureId)
+        public async Task<IEnumerable<FileMetadata>> FileNames(string azureId)
         {
-            var names = new List<string>();
+            var names = new List<FileMetadata>();
             ListObjectsV2Request lor = new ListObjectsV2Request()
             {
                 BucketName = _appSettings.BucketName,
@@ -97,7 +97,10 @@ namespace GugylDrajfApi.Services
             var objectListing = await _client.ListObjectsV2Async(lor);
             foreach (var obj in objectListing.S3Objects)
             {
-                names.Add(obj.Key.Split("/")[1]);
+                var name = obj.Key.Split("/")[1];
+                var lastModified = obj.LastModified;
+                var isArchieved = obj.StorageClass.Value == "STANDARD" ? false : true;
+                names.Add(new FileMetadata(name,lastModified,isArchieved));
             }
             return names;
         }
