@@ -1,0 +1,14 @@
+.fileUploadIconLarge {
+    font-size: 10em !important;
+}
+
+.uploadIcon {
+    border: 2px dashed #afafaf !important;
+    padding: 40px !important; 
+    margin-top: 30px !important;
+    transition: 0.3s !important;
+}
+
+.acceptIcon {
+    border-color: #31339d !important;
+}
