@@ -13,6 +13,7 @@ namespace GugylDrajfApi.Services
     {
         Task<S3Response> UploadFileToS3(string azureId, IFormFile file);
         Task<(MemoryStream stream, string contentType)> DownloadFile(string azureId, string filename);
+        string GetDownloadFileUrl(string azureId, string filename);
         Task<IEnumerable<string>> FileNames(string azureId);
     }
 }

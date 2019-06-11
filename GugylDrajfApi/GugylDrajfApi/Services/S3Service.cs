@@ -39,37 +39,43 @@ namespace GugylDrajfApi.Services
             //    var memory = new MemoryStream();
             //    using (var response = await _client.GetObjectAsync(request))
             //    using (var responseStream = response.ResponseStream)
-            //    using (var reader =  new StreamReader(responseStream))
-            //    {
-            //        using (FileStream fs = new FileStream("C:\\Users\\ulano\\OneDrive\\Pulpit\\lol.txt", FileMode.Create, FileAccess.Write))
-            //        {
-            //            byte[] data = new byte[32768];
-            //            int bytesRead = 0;
-            //            do
-            //            {
-            //                bytesRead = responseStream.Read(data, 0, data.Length);
-            //                fs.Write(data, 0, bytesRead);
-            //                memory.Write(data, 0, bytesRead);
-            //            }
-            //            while (bytesRead > 0);
-            //            fs.Flush();
-            //            fs.Write(data, 0, bytesRead);
-            //        }
-
-            //        reader.ReadToEnd();
-            //        string contentType = response.Headers["Content-Type"];
-            //        //await responseStream.CopyToAsync(memory);
-
-            //        //CopyStream(responseStream, memory);
-            //        return (memory,contentType);
+            //    using (var reader = new StreamReader(responseStream))
+            //    {      
+            //        var body = reader.ReadToEnd();
+            //        File.WriteAllText(path, body);
             //    }
             //}
-            //catch(Exception e)
+            //catch (Exception e)
             //{
             //    Console.WriteLine(e.Message);
             //}
             return (null,null);
         }
+
+        public string GetDownloadFileUrl(string azureId, string filename)
+        {
+            string urlString = "";
+            try
+            {
+                GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                {
+                    BucketName = _appSettings.BucketName,
+                    Key = $"{azureId}/{filename}",
+                    Expires = DateTime.Now.AddMinutes(5)
+                };
+                urlString = _client.GetPreSignedURL(request);
+            }
+            catch (AmazonS3Exception e)
+            {
+                Console.WriteLine("Error encountered on server. Message:'{0}' when writing an object", e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unknown encountered on server. Message:'{0}' when writing an object", e.Message);
+            }
+            return urlString;
+        }
+
         public static void CopyStream(Stream input, Stream output)
         {
             byte[] buffer = new byte[8 * 1024];

@@ -31,25 +31,33 @@ namespace GugylDrajfApi.Controllers
         }
 
 
+        //[HttpGet]
+        //[Route("{filename}")]
+        //public async Task<IActionResult> DownloadFile(string filename)
+        //{
+        //    //TODO
+        //    try
+        //    {
+        //        var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+        //        //var azureId = "asldkj23jljkads";
+        //        var file = await _service.DownloadFile(azureId, filename);
+        //        var f = File(file.stream, file.contentType, filename);
+        //        return f;
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //        return Ok();
+        //    }
+        //}
+
         [HttpGet]
         [Route("{filename}")]
-        public async Task<IActionResult> DownloadFile(string filename)
+        public string GetDownloadFileUrl(string filename)
         {
-            //TODO
-            try
-            {
-                var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
-                //var azureId = "asldkj23jljkads";
-                var file = await _service.DownloadFile(azureId, filename);
-                var f= File(file.stream,file.contentType,filename);
-                return f;
-
-            }
-            catch ( Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return Ok();    
-            }
+            var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+            return _service.GetDownloadFileUrl(azureId, filename);
         }
         
         [HttpPost]
@@ -62,7 +70,7 @@ namespace GugylDrajfApi.Controllers
                 if (file.Length > 0)
                 {
                    var response = await _service.UploadFileToS3(azureId,file);
-                   return StatusCode((int)response.Status);
+                   return StatusCode((int)response.Status, new { Filename = file.FileName });
                 }
                 return BadRequest();
             }
