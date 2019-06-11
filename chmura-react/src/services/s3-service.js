@@ -1,11 +1,11 @@
-const API_URL = 'https://neu1fmwq5k.execute-api.us-east-1.amazonaws.com/';
+import { API_URL } from './constants';
 
-export async function uploadFiles(files, onProgress) {
-    const promises = files.map(file => uploadFile(file, onProgress));
+export async function uploadFiles(files, onProgress, token) {
+    const promises = files.map(file => uploadFile(file, onProgress, token));
     return await Promise.all(promises);
 }
 
-function uploadFile(file, onProgress) {
+function uploadFile(file, onProgress, token) {
     return new Promise((resolve, reject) => {
         const req = new XMLHttpRequest();
 
@@ -21,9 +21,27 @@ function uploadFile(file, onProgress) {
         });
 
         const formData = new FormData();
-        formData.append('files', [file]);
-
-        req.open('POST', `${API_URL}files`);
+        formData.append('files', file);
+        req.open('POST', `${API_URL}/files`);
+        req.setRequestHeader('Authorization', `Bearer ${token}`);
         req.send(formData);
     });
+}
+
+export async function getUploadedFiles(token) {
+    return await fetch(`${API_URL}/files/names`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      }).then(response => response.json());
+}
+
+export async function downloadFile(name, token) {
+    return await fetch(`${API_URL}/files/${name}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
 }

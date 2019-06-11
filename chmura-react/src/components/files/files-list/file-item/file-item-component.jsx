@@ -6,18 +6,15 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import IconButton from '@material-ui/core/IconButton';
 import Styles from './file-item-component.css';
 
-function IconButtonLink(props) {
-    return <IconButton component="a" {...props} />;
-}
 
 export function FileItem(props) {
     return (
         <ListItem classes={{root: Styles.fileItemElement}}>
             <ListItemText primary={props.name} />
             <ListItemIcon>
-                <IconButtonLink href={props.link}>
+                <IconButton onClick={props.downloaded}>
                     <GetAppIcon />
-                </IconButtonLink>
+                </IconButton>
             </ListItemIcon>
         </ListItem>
     );

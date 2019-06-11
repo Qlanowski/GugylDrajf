@@ -1,0 +1,17 @@
+.uploadPaper {
+    position: absolute;
+    width: 1200px;
+    max-width: 90%;
+    padding: 15px;
+    background-color: #fff;
+    padding: 20px;
+    outline: 'none',
+}
+
+.uploadButton {
+    margin-top: 20px !important;
+}
+
+.header {
+    margin-top: 30px !important;
+}

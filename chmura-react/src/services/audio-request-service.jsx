@@ -1,7 +1,7 @@
-const API_URL = 'http://localhost:1257/';
+import { API_URL } from './constants'
 
 export async function signUp(username, email, files) {
-    let url = API_URL + `api/signup/${username}/${email}`;
+    let url = API_URL + `/signup/${username}/${email}`;
 
     var formData = new FormData();
 
@@ -19,7 +19,7 @@ export async function login(username, file) {
     // PRODUCTION
     // let url = API_URL + `api/login/${username}/`;
     // DEBUG
-    let url = API_URL + `api/login/tokendebug/${username}/`;
+    let url = API_URL + `/login/tokendebug/${username}/`;
 
     var formData = new FormData();
     formData.append("audioSample", file);
