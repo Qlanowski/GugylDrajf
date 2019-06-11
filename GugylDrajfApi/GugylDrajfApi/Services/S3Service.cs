@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace GugylDrajfApi.Services
 {
-    public class S3Service:IS3Service
+    public class S3Service : IS3Service
     {
         private readonly IAmazonS3 _client;
         private readonly AppSettings _appSettings;
@@ -50,6 +50,19 @@ namespace GugylDrajfApi.Services
             }
             return urlString;
         }
+
+        public async Task<DeleteObjectResponse> DeleteFile(string azureId, string filename)
+        {
+            var deleteObjectRequest = new DeleteObjectRequest
+            {
+                BucketName = _appSettings.BucketName,
+                Key = $"{azureId}/{filename}",
+            };
+
+            Console.WriteLine("Deleting an object");
+            return await _client.DeleteObjectAsync(deleteObjectRequest);
+        }
+
         public async Task<IEnumerable<FileMetadata>> FileNames(string azureId)
         {
             var names = new List<FileMetadata>();
@@ -64,12 +77,12 @@ namespace GugylDrajfApi.Services
                 var name = obj.Key.Split("/")[1];
                 var lastModified = obj.LastModified;
                 var isArchieved = obj.StorageClass.Value == "STANDARD" ? false : true;
-                names.Add(new FileMetadata(name,lastModified,isArchieved));
+                names.Add(new FileMetadata(name, lastModified, isArchieved));
             }
             return names;
         }
 
-        public async Task<S3Response> UploadFileToS3(string azureId,IFormFile file)
+        public async Task<S3Response> UploadFileToS3(string azureId, IFormFile file)
         {
             try
             {
@@ -90,9 +103,9 @@ namespace GugylDrajfApi.Services
                 }
                 return new S3Response(HttpStatusCode.OK);
             }
-            catch(AmazonS3Exception e)
+            catch (AmazonS3Exception e)
             {
-                return new S3Response(e.StatusCode,e.Message);
+                return new S3Response(e.StatusCode, e.Message);
             }
             catch (Exception e)
             {
