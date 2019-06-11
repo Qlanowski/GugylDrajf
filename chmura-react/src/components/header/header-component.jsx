@@ -23,7 +23,7 @@ export function Header() {
                 <Grid item>
                     <Toolbar>
                         <Typography color="inherit">
-                            Gugyl drajw
+                            Gugyl drajf
                     </Typography>
                     </Toolbar>
                 </Grid>

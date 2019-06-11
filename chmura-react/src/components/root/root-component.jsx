@@ -32,7 +32,6 @@ export function Root() {
                 <CssBaseline />
                 <Header />
                 <Routes />
-                <Footer />
             </BrowserRouter>
         </UserStateProvider>
     );
