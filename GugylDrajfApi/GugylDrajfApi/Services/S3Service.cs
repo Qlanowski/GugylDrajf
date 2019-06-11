@@ -27,31 +27,6 @@ namespace GugylDrajfApi.Services
             _appSettings = appSettings.Value;
         }
 
-        public async Task<(MemoryStream stream,string contentType)> DownloadFile(string azureId, string filename)
-        {
-            //try
-            //{
-            //    var request = new GetObjectRequest
-            //    {
-            //        BucketName = _appSettings.BucketName,
-            //        Key = $"{azureId}/{filename}"
-            //    };
-            //    var memory = new MemoryStream();
-            //    using (var response = await _client.GetObjectAsync(request))
-            //    using (var responseStream = response.ResponseStream)
-            //    using (var reader = new StreamReader(responseStream))
-            //    {      
-            //        var body = reader.ReadToEnd();
-            //        File.WriteAllText(path, body);
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.Message);
-            //}
-            return (null,null);
-        }
-
         public string GetDownloadFileUrl(string azureId, string filename)
         {
             string urlString = "";
@@ -75,17 +50,6 @@ namespace GugylDrajfApi.Services
             }
             return urlString;
         }
-
-        public static void CopyStream(Stream input, Stream output)
-        {
-            byte[] buffer = new byte[8 * 1024];
-            int len;
-            while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                output.Write(buffer, 0, len);
-            }
-        }
-
         public async Task<IEnumerable<FileMetadata>> FileNames(string azureId)
         {
             var names = new List<FileMetadata>();
