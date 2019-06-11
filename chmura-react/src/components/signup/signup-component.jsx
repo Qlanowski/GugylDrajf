@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card';
@@ -11,21 +11,24 @@ import Container from '@material-ui/core/Container';
 import AudioRecorder from 'react-audio-recorder';
 import * as audioRequestService from '../../services/audio-request-service';
 import * as audioProcessingService from '../../services/audio-processing-service';
-import { useStateValue } from '../../context/user-state-provider';
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import { spacing } from '@material-ui/system';
 import Box from '@material-ui/core/Box'
 
+var recordBlobs = [];
+
 export function Signup(props) {
-    let recordBlobs = [];
     let userId = "";
     let email = "";
-    const [userState, dispatch] = useStateValue();
 
-    let onAudioChange = (eventArgs) => {
-        if (eventArgs.duration > 0)
+    const [blobCount, setBlobCount] = useState(0);
+
+    let onAudioChange = (eventArgs, index) => {
+        if (eventArgs.duration > 0) {
             recordBlobs.push(eventArgs.audioData);
+            setBlobCount(recordBlobs.length);
+        }
     };
 
     let onIdChange = (event) => {
@@ -89,21 +92,23 @@ export function Signup(props) {
                         Your phrase:  <b>"Houston we have had a problem"</b>
                     </Typography>
                     <Box style={buttonStyle} >
-                        <AudioRecorder onChange={onAudioChange}
-                            downloadable={false}/>
+                        <AudioRecorder onChange={(eventArgs) => onAudioChange(eventArgs, 0)}
+                            downloadable={false} />
                     </Box>
                     {
-                        recordBlobs.length > 0 ? ( 
+                        blobCount > 0 ? (
                             <Box style={buttonStyle} >
-                                <AudioRecorder onChange={onAudioChange}
-                                    downloadable={false}/>
-                        </Box> ) : null
-                        
+                                <AudioRecorder onChange={(eventArgs) => onAudioChange(eventArgs, 1)}
+                                    downloadable={false} />
+                            </Box>) : null
                     }
-                    {/* <Box style={buttonStyle} >
-                        <AudioRecorder onChange={onAudioChange}
-                            downloadable={false}/>
-                    </Box> */}
+                    {
+                        blobCount > 1 ? (
+                            <Box style={buttonStyle} >
+                                <AudioRecorder onChange={(eventArgs) => onAudioChange(eventArgs, 2)}
+                                    downloadable={false} />
+                            </Box>) : null
+                    }
                     <Button variant="contained" color="primary" onClick={signUp} style={marginStyle}>Sign up</Button>
                 </Grid>
             </Paper>
