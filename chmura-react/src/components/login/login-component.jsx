@@ -9,6 +9,9 @@ import { useStateValue } from '../../context/user-state-provider';
 import AudioRecorder from 'react-audio-recorder';
 import * as audioRequestService from '../../services/audio-request-service';
 import * as audioProcessingService from '../../services/audio-processing-service';
+import Paper from '@material-ui/core/Paper'
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
 
 export function Login(props) {
     const [name, setName] = useState('');
@@ -34,24 +37,46 @@ export function Login(props) {
         props.history.push('/')
     }
 
+    var cardStyle = {
+        minHeight: '30vw',
+        margin: '100px 0px 0px 0px'
+    }
+    var textfieldStyle = {
+        width: '75%',
+        margin: '1vw'
+    }
+
+    var marginStyle = {
+        margin: '1vw'
+    }
 
     return (
         <Container maxWidth="md">
-            <Card>
-                <CardContent>
+            <Paper style={cardStyle}>
+                <Grid container container
+                    direction="column"
+                    justify="center"
+                    alignItems="center"
+                    style={cardStyle}>
+                    <Typography variant="h3"
+                        component="h3"
+                        style={marginStyle}>
+                        <b>Log in</b>
+                    </Typography>
                     <TextField id="outlined-with-placeholder"
+                        style={textfieldStyle}
                         label="User Id"
                         margin="normal"
                         variant="outlined"
                         inputProps={nameFieldProps} />
-                    <CardActions>
-                        <Button variant="contained" color="primary" onClick={logIn}
-                        variant="outlined" >Log in</Button>
                     <AudioRecorder onChange={onAudioChange}
-                            downloadable="false" />
-                    </CardActions >
-                </CardContent>
-            </Card>
+                        downloadable={false} />
+                    <Button variant="contained" color="primary" onClick={logIn} style={marginStyle}>
+                        Log in
+                    </Button>
+                </Grid>
+
+            </Paper>
         </Container>
     );
 }
