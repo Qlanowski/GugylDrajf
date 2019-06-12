@@ -37,6 +37,10 @@ module.exports = {
                             modules: true
                         }
                     }]
+            },
+            {
+                test: /\.(gif|svg|jpg|png)$/,
+                loader: "file-loader",
             }
         ],
     },

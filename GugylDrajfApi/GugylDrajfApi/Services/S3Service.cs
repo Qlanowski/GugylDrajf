@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace GugylDrajfApi.Services
 {
-    public class S3Service:IS3Service
+    public class S3Service : IS3Service
     {
         private readonly IAmazonS3 _client;
         private readonly AppSettings _appSettings;
@@ -25,31 +25,6 @@ namespace GugylDrajfApi.Services
         {
             _client = client;
             _appSettings = appSettings.Value;
-        }
-
-        public async Task<(MemoryStream stream,string contentType)> DownloadFile(string azureId, string filename)
-        {
-            //try
-            //{
-            //    var request = new GetObjectRequest
-            //    {
-            //        BucketName = _appSettings.BucketName,
-            //        Key = $"{azureId}/{filename}"
-            //    };
-            //    var memory = new MemoryStream();
-            //    using (var response = await _client.GetObjectAsync(request))
-            //    using (var responseStream = response.ResponseStream)
-            //    using (var reader = new StreamReader(responseStream))
-            //    {      
-            //        var body = reader.ReadToEnd();
-            //        File.WriteAllText(path, body);
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.Message);
-            //}
-            return (null,null);
         }
 
         public string GetDownloadFileUrl(string azureId, string filename)
@@ -76,19 +51,21 @@ namespace GugylDrajfApi.Services
             return urlString;
         }
 
-        public static void CopyStream(Stream input, Stream output)
+        public async Task<DeleteObjectResponse> DeleteFile(string azureId, string filename)
         {
-            byte[] buffer = new byte[8 * 1024];
-            int len;
-            while ((len = input.Read(buffer, 0, buffer.Length)) > 0)
+            var deleteObjectRequest = new DeleteObjectRequest
             {
-                output.Write(buffer, 0, len);
-            }
+                BucketName = _appSettings.BucketName,
+                Key = $"{azureId}/{filename}",
+            };
+
+            Console.WriteLine("Deleting an object");
+            return await _client.DeleteObjectAsync(deleteObjectRequest);
         }
 
-        public async Task<IEnumerable<string>> FileNames(string azureId)
+        public async Task<IEnumerable<FileMetadata>> FileNames(string azureId)
         {
-            var names = new List<string>();
+            var names = new List<FileMetadata>();
             ListObjectsV2Request lor = new ListObjectsV2Request()
             {
                 BucketName = _appSettings.BucketName,
@@ -97,12 +74,15 @@ namespace GugylDrajfApi.Services
             var objectListing = await _client.ListObjectsV2Async(lor);
             foreach (var obj in objectListing.S3Objects)
             {
-                names.Add(obj.Key.Split("/")[1]);
+                var name = obj.Key.Split("/")[1];
+                var lastModified = obj.LastModified;
+                var isArchieved = obj.StorageClass.Value == "STANDARD" ? false : true;
+                names.Add(new FileMetadata(name, lastModified, isArchieved));
             }
             return names;
         }
 
-        public async Task<S3Response> UploadFileToS3(string azureId,IFormFile file)
+        public async Task<S3Response> UploadFileToS3(string azureId, IFormFile file)
         {
             try
             {
@@ -123,9 +103,9 @@ namespace GugylDrajfApi.Services
                 }
                 return new S3Response(HttpStatusCode.OK);
             }
-            catch(AmazonS3Exception e)
+            catch (AmazonS3Exception e)
             {
-                return new S3Response(e.StatusCode,e.Message);
+                return new S3Response(e.StatusCode, e.Message);
             }
             catch (Exception e)
             {

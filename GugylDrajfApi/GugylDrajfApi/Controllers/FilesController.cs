@@ -30,28 +30,6 @@ namespace GugylDrajfApi.Controllers
             return Ok(files);
         }
 
-
-        //[HttpGet]
-        //[Route("{filename}")]
-        //public async Task<IActionResult> DownloadFile(string filename)
-        //{
-        //    //TODO
-        //    try
-        //    {
-        //        var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
-        //        //var azureId = "asldkj23jljkads";
-        //        var file = await _service.DownloadFile(azureId, filename);
-        //        var f = File(file.stream, file.contentType, filename);
-        //        return f;
-
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e.Message);
-        //        return Ok();
-        //    }
-        //}
-
         [HttpGet]
         [Route("{filename}")]
         public string GetDownloadFileUrl(string filename)
@@ -60,6 +38,16 @@ namespace GugylDrajfApi.Controllers
             return _service.GetDownloadFileUrl(azureId, filename);
         }
         
+        [HttpDelete]
+        [Route("delete/{filename}")]
+        public async Task<IActionResult> DeleteFile(string filename)
+        {
+            var azureId = User.Claims.FirstOrDefault(c => c.Type == "azureId").Value;
+            var response = await _service.DeleteFile(azureId, filename);
+
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Upload()
         {
