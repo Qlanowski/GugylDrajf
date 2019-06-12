@@ -5,13 +5,30 @@ import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid';
 import { useStateValue } from '../../context/user-state-provider';
 import { HeaderButtons } from './header-buttons/header-buttons-component';
+import Button from '@material-ui/core/Button';
 
-export function Header() {
+export function Header(props) {
     const [userState, dispatch] = useStateValue();
-    const links = [{path: '/',
-                    name: 'Sign up'}, 
-                    {path: '/login',
-                    name: 'Login'}];
+    const links = [{
+        path: '/signup',
+        name: 'Sign up'
+    },
+    {
+        path: '/login',
+        name: 'Login'
+    }];
+    const loggedInLinks = [{
+        path: '/files',
+        name: 'Files'
+    }];
+
+    const logout = () => {
+        dispatch({
+            type: 'deleteUser'
+        });
+        window.location.href = '/';
+    }
+
     return (
         <AppBar position="static">
             <Grid
@@ -28,7 +45,7 @@ export function Header() {
                     </Toolbar>
                 </Grid>
                 <Grid item>
-                    <HeaderButtons isLogged={userState.isLogged} links={links} />
+                    <HeaderButtons isLogged={userState.isLogged} loggedInLinks={loggedInLinks} logout={logout} loggedOutLinks={links} />
                 </Grid>
             </Grid>
         </AppBar>
