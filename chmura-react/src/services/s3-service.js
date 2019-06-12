@@ -1,4 +1,5 @@
 import { API_URL } from './constants';
+import download from 'downloadjs';
 
 export async function uploadFiles(files, onProgress, token) {
     const promises = files.map(file => uploadFile(file, onProgress, token));
@@ -37,9 +38,22 @@ export async function getUploadedFiles(token) {
       }).then(response => response.json());
 }
 
-export async function downloadFile(name, token) {
+export async function getFileUrl(name, token) {
     return await fetch(`${API_URL}/files/${name}`, {
         method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      }).then(response => response.text());
+}
+
+export async function downloadFile(fileUrl) {
+    return await download(fileUrl);
+}
+
+export async function deleteFile(name, token) {
+    return await fetch(`${API_URL}/files/delete/${name}`, {
+        method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`
         }

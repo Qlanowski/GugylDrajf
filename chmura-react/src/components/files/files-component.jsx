@@ -3,7 +3,7 @@ import { FilesList } from './files-list/files-list-component';
 import { FileUpload } from './file-upload/file-upload-component';
 import { getUploadedFiles } from '../../services/s3-service';
 import { useStateValue } from '../../context/user-state-provider';
-import { uploadFiles, downloadFile } from '../../services/s3-service';
+import { uploadFiles, getFileUrl, deleteFile, downloadFile } from '../../services/s3-service';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
@@ -47,14 +47,27 @@ export function Files() {
   }, []);
 
   const onUploadStarted = async (files, onProgress) => {
-    await uploadFiles(files, onProgress, userState.token);
-    const newFiles = userFiles.concat(files.map(file => file.name));
+    const res = await uploadFiles(files, onProgress, userState.token);
+
+    const newFiles = userFiles.concat(files.map(file => ({name: file.name, isArchieved: false, lastModified: new Date()})));
     setUserFiles(newFiles);
   }
 
   const onFileDownloaded = async (file) => {
-    const result = await downloadFile(file, userState.token);
-    console.log(result);
+    const url = await getFileUrl(file.name, userState.token);
+    await downloadFile(url);
+  }
+
+  const onFileDeleted = async (file, index) => {
+    await deleteFile(file.name, userState.token);
+    const newFiles = userFiles.filter((f) => f.name !== file.name);
+    setUserFiles(newFiles);
+  }
+
+  const onFileRestored = async (file) => {
+    await getFileUrl(file.name, userState.token);
+    const newFiles = userFiles.map((f) => f.name === file.name ? {...f, isArchieved: false} : f);
+    setUserFiles(newFiles);
   }
 
   return (<div>
@@ -72,6 +85,6 @@ export function Files() {
         </div>
       </Modal>
     <Typography className={Styles.header} variant="h2">Your files</Typography>
-    <FilesList files={userFiles}  fileDownloaded={onFileDownloaded} />
+    <FilesList files={userFiles} fileDeleted={onFileDeleted} fileRestored={onFileRestored} fileDownloaded={onFileDownloaded} />
   </div>);
 }

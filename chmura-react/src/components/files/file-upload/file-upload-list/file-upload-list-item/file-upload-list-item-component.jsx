@@ -5,7 +5,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Grid from '@material-ui/core/Grid';
 import Styles from './file-upload-list-item-component.css';
 import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
+import ClearIcon from '@material-ui/icons/Clear';
 
 export function FileUploadListItem(props) {
     return (
@@ -22,7 +22,7 @@ export function FileUploadListItem(props) {
                 <Grid item>
                     {
                         props.uploading ? <LinearProgress color="primary" variant="determinate" value={props.progress} 
-                        classes={{root: Styles.fileUploadListItem}} /> : <IconButton onClick={() => props.deleted()}><DeleteIcon /></IconButton>
+                        classes={{root: Styles.fileUploadListItem}} /> : <IconButton onClick={() => props.deleted()}><ClearIcon /></IconButton>
                     }
                 </Grid>
             </Grid>

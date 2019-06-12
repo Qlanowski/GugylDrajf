@@ -55,5 +55,6 @@ module.exports = {
     plugins: [htmlPlugin],
     resolve: {
         extensions: ['.js', '.jsx', '.css']
-    }
+    },
+    node: { fs: 'empty' }
 };
