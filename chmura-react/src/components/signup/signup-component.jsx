@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography'
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -15,14 +11,25 @@ import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import { spacing } from '@material-ui/system';
 import Box from '@material-ui/core/Box'
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 var recordBlobs = [];
 
 export function Signup(props) {
-    let userId = "";
-    let email = "";
+    const [userId, setUserId] = useState('');
+    const [email, setEmail] = useState('');
 
     const [blobCount, setBlobCount] = useState(0);
+    const [isSnackbarOpened, setIsSnackbarOpened] = useState(false);
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setIsSnackbarOpened(false);
+    }
 
     let onAudioChange = (eventArgs, index) => {
         if (eventArgs.duration > 0) {
@@ -32,16 +39,22 @@ export function Signup(props) {
     };
 
     let onIdChange = (event) => {
-        userId = event.target.value;
+        setUserId(event.target.value);
     }
 
     let onEmailChange = (event) => {
-        email = event.target.value;
+        setEmail(event.target.value);
     }
 
     const signUp = async () => {
-        let responseJson = await audioRequestService.signUp(userId, email, recordBlobs);
-        props.history.push('/')
+        try {
+            console.log(userId);
+            await audioRequestService.signUp(userId, email, recordBlobs);
+            props.history.push('/')
+        }
+        catch (e) {
+            setIsSnackbarOpened(true);
+        }
     }
 
     var cardStyle = {
@@ -63,6 +76,23 @@ export function Signup(props) {
     return (
         <Container maxWidth="md">
             <Paper style={cardStyle}>
+                <Snackbar
+                    variant="success"
+                    open={isSnackbarOpened}
+                    autoHideDuration={6000}
+                    onClose={handleSnackbarClose}
+                    message={<span>Signup failed!</span>}
+                    action={[
+                        <IconButton
+                            key="close"
+                            aria-label="Close"
+                            color="inherit"
+                            onClick={handleSnackbarClose}
+                        >
+                            <CloseIcon />
+                        </IconButton>,
+                    ]}
+                />
                 <Grid container container
                     direction="column"
                     justify="center"
@@ -109,7 +139,7 @@ export function Signup(props) {
                                     downloadable={false} />
                             </Box>) : null
                     }
-                    <Button variant="contained" color="primary" onClick={signUp} style={marginStyle}>Sign up</Button>
+                    <Button variant="contained" color="primary"  disabled={!userId.length || blobCount <= 2 } onClick={() => signUp()} style={marginStyle}>Sign up</Button>
                 </Grid>
             </Paper>
         </Container>

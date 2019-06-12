@@ -65,7 +65,7 @@ export function Files() {
   }
 
   const onFileRestored = async (file) => {
-    await getFileUrl(file.name, userState.token);
+    await onFileDownloaded(file);
     const newFiles = userFiles.map((f) => f.name === file.name ? {...f, isArchieved: false} : f);
     setUserFiles(newFiles);
   }

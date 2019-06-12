@@ -1,9 +1,9 @@
 import { API_URL } from './constants';
 import download from 'downloadjs';
 
-export async function uploadFiles(files, onProgress, token) {
+export function uploadFiles(files, onProgress, token) {
     const promises = files.map(file => uploadFile(file, onProgress, token));
-    return await Promise.all(promises);
+    return Promise.all(promises);
 }
 
 function uploadFile(file, onProgress, token) {
@@ -29,8 +29,8 @@ function uploadFile(file, onProgress, token) {
     });
 }
 
-export async function getUploadedFiles(token) {
-    return await fetch(`${API_URL}/files/names`, {
+export function getUploadedFiles(token) {
+    return fetch(`${API_URL}/files/names`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -38,8 +38,8 @@ export async function getUploadedFiles(token) {
       }).then(response => response.json());
 }
 
-export async function getFileUrl(name, token) {
-    return await fetch(`${API_URL}/files/${name}`, {
+export function getFileUrl(name, token) {
+    return fetch(`${API_URL}/files/${name}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -47,12 +47,12 @@ export async function getFileUrl(name, token) {
       }).then(response => response.text());
 }
 
-export async function downloadFile(fileUrl) {
-    return await download(fileUrl);
+export function downloadFile(fileUrl) {
+    return download(fileUrl);
 }
 
-export async function deleteFile(name, token) {
-    return await fetch(`${API_URL}/files/delete/${name}`, {
+export function deleteFile(name, token) {
+    return fetch(`${API_URL}/files/delete/${name}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`

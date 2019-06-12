@@ -36,7 +36,7 @@ export function FileItem(props) {
             {
                 props.file.isArchieved ? 
                 <IconButton onClick={props.restored}>
-                    <RestoreIcon />
+                    <GetAppIcon />
                 </IconButton> :
                 <IconButton onClick={props.downloaded}>
                     <GetAppIcon />

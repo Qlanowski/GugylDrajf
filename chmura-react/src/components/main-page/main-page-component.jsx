@@ -22,7 +22,7 @@ export function MainPage() {
     const [userState, dispatch] = useStateValue();
 
     return (<div style={{ textAlign: 'center' }}>
-        <Typography style={{ fontFamily: 'Comic Sans MS', marginTop: '40px' }} variant="h1">GUGYL DRAJW</Typography>
+        <Typography style={{ fontFamily: 'Comic Sans MS', marginTop: '40px' }} variant="h1">GUGYL DRAJF</Typography>
         {
             userState.isLogged ? <LoggedButtons /> : <LoggedOfButtons /> 
         }

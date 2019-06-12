@@ -6,6 +6,7 @@ import { Footer } from '../footer/footer-component';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { UserStateProvider } from '../../context/user-state-provider';
 import * as LocalStorageService from '../../services/local-storage-service';
+import Container from '@material-ui/core/Container';
 
 export function Root() {
     const localStorageState = LocalStorageService.getObject('userState');
@@ -40,7 +41,9 @@ export function Root() {
             <BrowserRouter>
                 <CssBaseline />
                 <Header />
-                <Routes />
+                <Container>
+                  <Routes />
+                </Container>
             </BrowserRouter>
         </UserStateProvider>
     );
