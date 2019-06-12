@@ -30,7 +30,7 @@ namespace GugylDrajfApi.Controllers
         private readonly AppSettings _appSettings;
         private readonly ISecretService _secretService;
 
-        public SignUpController(IUserRepository repo, IOptions<AppSettings> appSettings,ISecretService secretService)
+        public SignUpController(IUserRepository repo, IOptions<AppSettings> appSettings, ISecretService secretService)
         {
             _repo = repo;
             _appSettings = appSettings.Value;
@@ -68,14 +68,22 @@ namespace GugylDrajfApi.Controllers
                 });
             }
 
+            bool isEnrollReady = false;
             foreach (var file in files)
             {
                 var response = await CreateEnrollment(azureId, file);
-                if (!response.IsSuccessStatusCode)
-                    return StatusCode((int)response.StatusCode);
+                dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+                if (response.IsSuccessStatusCode)
+                {
+                    if (responseJson.enrollmentStatus == "Enrolled")
+                        isEnrollReady = true;
+                }
             }
 
-            return Ok();
+            if (isEnrollReady)
+                return Ok();
+            else
+                return StatusCode(202, "Please register again, too few recognized phrases on audio samples");
         }
 
         private async Task<string> CreateProfile()
@@ -136,8 +144,7 @@ namespace GugylDrajfApi.Controllers
                 content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
                 response = await client.PostAsync(uri, content);
                 // DEBUG - uncomment for better json reading feeling
-                dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-                    return response;
+                return response;
             }
 
         }
