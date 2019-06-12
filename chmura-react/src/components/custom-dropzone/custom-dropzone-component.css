@@ -7,8 +7,14 @@
     padding: 40px !important; 
     margin-top: 30px !important;
     transition: 0.3s !important;
+    background: rgba(0,0,0,0.01) !important;
+}
+
+.uploadIcon:hover {
+    background: rgba(0,0,0,0.05) !important;
 }
 
 .acceptIcon {
     border-color: #31339d !important;
+    background: transparent !important;
 }

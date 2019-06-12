@@ -64,6 +64,12 @@ export function Files() {
     setUserFiles(newFiles);
   }
 
+  const onFileRestored = async (file) => {
+    await getFileUrl(file.name, userState.token);
+    const newFiles = userFiles.map((f) => f.name === file.name ? {...f, isArchieved: false} : f);
+    setUserFiles(newFiles);
+  }
+
   return (<div>
     <Button onClick={handleOpen} variant="outlined" size="large" color="primary" className={Styles.uploadButton} fullWidth>
       Upload files
@@ -79,6 +85,6 @@ export function Files() {
         </div>
       </Modal>
     <Typography className={Styles.header} variant="h2">Your files</Typography>
-    <FilesList files={userFiles} fileDeleted={onFileDeleted}  fileDownloaded={onFileDownloaded} />
+    <FilesList files={userFiles} fileDeleted={onFileDeleted} fileRestored={onFileRestored} fileDownloaded={onFileDownloaded} />
   </div>);
 }
