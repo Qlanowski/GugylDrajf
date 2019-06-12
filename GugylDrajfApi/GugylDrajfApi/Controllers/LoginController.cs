@@ -107,6 +107,8 @@ namespace GugylDrajfApi.Controllers
             {
                 content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
                 response = await client.PostAsync(uri, content);
+                dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+
                 return response;
             }
         }

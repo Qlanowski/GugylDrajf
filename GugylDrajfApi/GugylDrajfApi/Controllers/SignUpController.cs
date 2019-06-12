@@ -117,8 +117,7 @@ namespace GugylDrajfApi.Controllers
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", azureKey);
 
             // Request parameters
-            queryString["shortAudio"] = "true";
-            var uri = $"https://westus.api.cognitive.microsoft.com/spid/v1.0/identificationProfiles/{identificationProfileId}/enroll?" + queryString;
+            var uri = $"https://westus.api.cognitive.microsoft.com/spid/v1.0/verificationProfiles/{identificationProfileId}/enroll?" + queryString;
 
             HttpResponseMessage response;
 
@@ -136,7 +135,7 @@ namespace GugylDrajfApi.Controllers
                 content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
                 response = await client.PostAsync(uri, content);
                 // DEBUG - uncomment for better json reading feeling
-                // dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+                dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
                 return response;
             }
 
