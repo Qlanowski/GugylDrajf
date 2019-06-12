@@ -5,9 +5,11 @@ import { Routes } from '../routes/routes-component';
 import { Footer } from '../footer/footer-component';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { UserStateProvider } from '../../context/user-state-provider';
+import * as LocalStorageService from '../../services/local-storage-service';
 
 export function Root() {
-    const initialState = {
+    const localStorageState = LocalStorageService.getObject('userState');
+    const initialState = localStorageState !== null ? localStorageState : {
         isLogged: false,
         name: '',
     };
@@ -15,13 +17,20 @@ export function Root() {
     const reducer = (state, action) => {
         switch (action.type) {
           case 'setUser':
-            return {
+            const newObj = {
               ...state,
               isLogged: true,
               name: action.name,
               token: action.token
             };
-            
+            LocalStorageService.setObject('userState', newObj);
+            return newObj;
+          case 'deleteUser':
+            LocalStorageService.deleteObject('userState');
+            return {
+              name :'',
+              isLogged: false
+            }   
           default:
             return state;
         }

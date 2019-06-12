@@ -28,7 +28,6 @@ export function Login(props) {
 
     const logIn = async () => {
         const token = await audioRequestService.login(name, recordBlobs[0]);
-        console.log(token);
         dispatch({
             type: 'setUser',
             name,
