@@ -11,22 +11,17 @@ namespace GugylDrajfApi.Models
     {
         public static byte[] ConvertToAzureWav(byte[] rawAudio)
         {
-            var stream = new RawSourceWaveStream(
-                         new MemoryStream(rawAudio), new WaveFormat(16000, 2));
+            MemoryStream outStream = new MemoryStream();
+            using (var waveFileReader = new RawSourceWaveStream(new MemoryStream(rawAudio), new WaveFormat()))
+            {
+                var outFormat = new WaveFormat(16000, 1);
+                using (var resampler = new MediaFoundationResampler(waveFileReader, outFormat))
+                {
+                    WaveFileWriter.WriteWavFileToStream(outStream, resampler);
+                }
+            }
 
-            var mono = new StereoToMonoProvider16(stream);
-            mono.LeftVolume = 0.0f;
-            mono.RightVolume = 1.0f;
-
-            byte[] buffer = new byte[stream.Length];
-
-            int reader = 0;
-            MemoryStream memoryStream = new MemoryStream();
-            //while ((reader = mono.Read(buffer, 0, buffer.Length)) != 0)
-            //    memoryStream.Write(buffer, 0, reader);
-
-            WaveFileWriter.WriteWavFileToStream(memoryStream, mono);
-            return memoryStream.ToArray();
+            return outStream.ToArray();
         }
     }
 }

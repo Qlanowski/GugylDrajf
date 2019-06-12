@@ -56,7 +56,7 @@ namespace GugylDrajfApi.Controllers
                 return StatusCode((int)response.StatusCode);
 
             dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-            if (responseJson.result == false)
+            if (responseJson.result != "Accept")
                 return BadRequest("It is not you, you liar!");
 
             var token = await _userService.GenerateToken(user.Login, user.AzureId, user.Email);

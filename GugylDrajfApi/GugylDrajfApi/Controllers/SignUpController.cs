@@ -128,6 +128,7 @@ namespace GugylDrajfApi.Controllers
                 var rawData = br.ReadBytes((int)audioFile.OpenReadStream().Length);
                 convertedWav = WavConverter.ConvertToAzureWav(rawData);
             }
+            //System.IO.File.WriteAllBytes("file.wav", convertedWav);
             //byte[] byteData = Encoding.UTF8.GetBytes;
 
             using (var content = new ByteArrayContent(convertedWav))
@@ -136,7 +137,7 @@ namespace GugylDrajfApi.Controllers
                 response = await client.PostAsync(uri, content);
                 // DEBUG - uncomment for better json reading feeling
                 dynamic responseJson = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-                return response;
+                    return response;
             }
 
         }
