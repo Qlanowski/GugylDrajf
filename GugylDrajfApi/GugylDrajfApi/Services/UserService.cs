@@ -28,6 +28,9 @@ namespace GugylDrajfApi.Services
         public async Task<string> GenerateToken(string login, string azureId, string email)
         {
             string tokenContent = null;
+            if (String.IsNullOrWhiteSpace(login) || String.IsNullOrWhiteSpace(azureId) || String.IsNullOrWhiteSpace(email))
+                throw new ArgumentException();
+
             try
             {
                 var secret = await _secretsService.GetSecret(_appSettings.JwtKey);
