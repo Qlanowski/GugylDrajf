@@ -24,7 +24,7 @@ namespace ApiTests
             };
             var options = Microsoft.Extensions.Options.Options.Create<AppSettings>(appSettings);
             Mock<ISecretService> secretsService = new Mock<ISecretService>();
-            secretsService.Setup(m => m.GetSecret(It.IsAny<string>())).ReturnsAsync("someSecret");
+            secretsService.Setup(m => m.GetSecret(It.IsAny<string>())).ReturnsAsync("someSecretMustBeLongsomeSecretMustBeLongsomeSecretMustBeLongsomeSecretMustBeLongsomeSecretMustBeLongsomeSecretMustBeLong");
             var service = new UserService(options, secretsService.Object);
 
             Assert.NotNull(service.GenerateToken(login,azureId,email).GetAwaiter().GetResult());
